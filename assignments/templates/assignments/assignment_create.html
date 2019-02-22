@@ -1,0 +1,16 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Create/Edit Assignment{% endblock %}
+
+{% block content %}
+<div class="mt-2 form-control">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">Save</button>
+        <input type="button" class="btn btn-secondary" value="Back"
+                   onclick="window.history.back();">
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
+lib
+lib64
+db.sqlite3
+athina_files/*
+.idea
+*.pyc
+.dropbox*
+settings_secret.py
+
+# exception to the rule
+!athina_files/.gitkeep

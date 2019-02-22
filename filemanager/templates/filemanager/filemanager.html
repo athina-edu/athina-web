@@ -1,0 +1,46 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block head_addition %}
+{% load static %}
+<script src='{% static "athinaweb/jquery.min.js" %}'></script>
+{% endblock %}
+
+{% block title %}File Manager{% endblock %}
+
+
+{% block content %}
+<div class="mt-2">
+<h3><b>Viewing /{{ inner_path }}</b></h3>
+
+{% include 'filemanager/menu.html' %}
+
+{% if results|length > 0 %}
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Date Modified</th>
+        </tr>
+        {% for result in results %}
+        <tr>
+            <td>
+                <div class="dir-listing {{ result.isfile|yesno:'isfile,isdir,' }}">
+                    {% if result.isfile %}
+                    <a href="{% url 'filemanager:view_file' inner_path=result.path %}">{{ result.name }}</a>
+                    {% else %}
+                    <a href="{% url 'filemanager:index' inner_path=result.path %}">{{ result.name }}</a>
+                    {% endif %}
+                </div>
+            </td>
+            <td>{{ result.date_modified }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% else %}
+There are no files in this folder.
+    Try <a href="{% url 'filemanager:upload' inner_path=inner_path_hyphened %}">uploading some</a>.
+{% endif %}
+</div>
+{% endblock %}

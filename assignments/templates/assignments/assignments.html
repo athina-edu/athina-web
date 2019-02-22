@@ -1,0 +1,55 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block head_addition %}
+{% load static %}
+<script src='{% static "athinaweb/jquery.min.js" %}'></script>
+{% endblock %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="mt-2">
+<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
+<input type="button" class="btn btn-info" value="New Assignment"
+                   onclick="location.href = '{% url 'assignments:create_assignment' %}';">
+</nav>
+
+
+    {% if assignments_len > 0 %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th>Name</th>
+                <th>Active</th>
+                <th>Simulate</th>
+                <th>Options</th>
+            </tr>
+            {% for assignment in assignments %}
+            <tr>
+                <td><a href="{% url 'filemanager:index' inner_path=assignment.name %}">{{ assignment.name }}</a></td>
+                <td>{{ assignment.active }}</td>
+                <td>{{ assignment.simulate }}</td>
+                <td>
+                    <a href="{% url 'assignments:assignment_edit' assignment_id=assignment.pk %}">Edit</a> |
+                    <a class="confirm-delete{{ assignment.id }}"
+                       href="{% url 'assignments:assignment_delete' assignment_id=assignment.pk %}">Delete</a></td>
+                <script>
+            $('.confirm-delete{{ assignment.id }}').click(function(){
+                return confirm("Are you sure you want to delete?");
+            })
+
+
+
+
+
+                </script>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    There are no assignments in your account. Try <a href="{% url 'assignments:create_assignment' %}">creating on</a>.
+    {% endif %}
+</div>
+{% endblock %}
