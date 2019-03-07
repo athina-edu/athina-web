@@ -6,4 +6,4 @@ class AssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Assignment
-        fields = ('name', 'active', 'simulate')
+        fields = ('name', 'active', 'simulate', "git_source", "git_username", "git_password")

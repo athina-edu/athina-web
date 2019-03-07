@@ -14,6 +14,7 @@ athina_files/*
 *.pyc
 .dropbox*
 settings_secret.py
+athinaweb.egg-info
 
 # exception to the rule
 !athina_files/.gitkeep

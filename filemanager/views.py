@@ -6,6 +6,7 @@ from . import utils
 from .forms import FileFieldForm
 from django.shortcuts import redirect
 import datetime
+import git
 
 
 @login_required
@@ -13,6 +14,10 @@ def index(request, **kwargs):
     inner_path = kwargs.get('inner_path', None)
     inner_path, inner_path_hyphened, full_path = utils.inner_path_process(inner_path, request.user.id)
     results = []
+
+    # Refresh git repo
+    git.Repo(full_path).remote().pull()
+
     files = os.listdir(full_path)
     for file in files:
         if os.path.isfile("%s/%s" % (full_path, file)):
@@ -24,7 +29,8 @@ def index(request, **kwargs):
         else:
             path = utils.slashes_encode("%s/%s" % (inner_path, file))
         date_modified = datetime.datetime.fromtimestamp(int(os.path.getmtime("%s/%s" % (full_path, file)))).isoformat()
-        results.append({"name": file, "path": path, "isfile": isfile, "date_modified": date_modified})
+        if file != ".git":  # hide .git
+            results.append({"name": file, "path": path, "isfile": isfile, "date_modified": date_modified})
 
     previous_dir_path = "|".join(inner_path_hyphened.split("|")[:len(inner_path_hyphened.split("|"))-1])
     if previous_dir_path != "":
@@ -74,6 +80,7 @@ def view_file(request, **kwargs):
     reverse_view = kwargs.get('reverse', None)
     if reverse_view == "reverse":
         # TODO: reverse the printing of the view here
+        file_contents = "\n".join(reversed(file_contents.split("\n")))
         pass
     return render(request, 'filemanager/view_file.html', {"file_contents": file_contents, "inner_path": inner_path,
                                                           "inner_path_hyphened": inner_path_hyphened})

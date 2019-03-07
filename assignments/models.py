@@ -10,6 +10,9 @@ class Assignment(models.Model):
     data_updated = models.DateTimeField('Date Updated', auto_now=True)
     active = models.BooleanField(default=True)
     simulate = models.BooleanField(default=True)
+    git_source = models.CharField(max_length=255, default="")
+    git_username = models.CharField(max_length=255, default="", blank=True)
+    git_password = models.CharField(max_length=255, default="", blank=True)
 
     def __str__(self):
         return self.name

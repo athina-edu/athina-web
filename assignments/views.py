@@ -11,6 +11,9 @@ from rest_framework import generics
 from .serializers import AssignmentListSerializer
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
+import git
+import html
+import re
 
 
 @login_required()
@@ -48,9 +51,19 @@ def assignment_create(request, **kwargs):
                 assignment.absolute_path = "%s/%s/%s" % (settings.MEDIA_ROOT, request.user.id, assignment.name)
                 assignment.save()
                 if not os.path.exists(assignment.absolute_path):
-                    os.makedirs("%s/%s/tests" % (settings.BASE_DIR, assignment.absolute_path))
-                    shutil.copy("%s/assignments/assignementsample.cfg" % settings.STATICFILES_DIRS[0],
-                                "%s/%s/%s.cfg" % (settings.BASE_DIR, assignment.absolute_path, assignment.name))
+                    os.makedirs(assignment.absolute_path)
+                if assignment.git_password != "":
+                    url_matches = re.findall("(.*?)://(.*?)$", assignment.git_source)
+                    if url_matches[0][0] == 'https':
+                        git_url = "%s://%s:%s@%s" % (url_matches[0][0],
+                                                         html.escape(assignment.git_username),
+                                                         html.escape(assignment.git_password),
+                                                         url_matches[0][1])
+                        git.Repo.clone_from(git_url, assignment.absolute_path)
+                    else:
+                        git.Repo.clone_from(assignment.git_source, assignment.absolute_path)
+                else:
+                    git.Repo.clone_from(assignment.git_source, assignment.absolute_path)
             else:  # Existing assignment, move folder
                 old_assignment = get_object_or_404(Assignment, pk=assignment_id)
                 assignment = form.save(commit=False)
