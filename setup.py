@@ -5,7 +5,7 @@ setup(
     version='0.9',
     packages=find_packages(),
     scripts=['manage.py'],
-    install_requires=['gitpython'],
+    install_requires=['gitpython','Django>=2.0,<3.0', 'djangorestframework'],
     url='https://github.com/athina-edu/athina-web',
     license='MIT',
     author='Michail Tsikerdekis',
