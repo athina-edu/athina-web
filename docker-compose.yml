@@ -1,7 +1,7 @@
 version: '3'
 services:
-  athinaweb:
-    build: .
+  athina-web:
+    image: athinaedu/athina-web:latest
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
