@@ -4,5 +4,37 @@
 {% block title %}View Assignment{% endblock %}
 
 {% block content %}
-here lies the assignemnt
+<div class="mt-2">
+<nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-end">
+<input type="button" class="btn btn-info" value="New Assignment"
+                   onclick="location.href = '{% url 'assignments:create_assignment' %}';">
+</nav>
+
+
+    {% if users_len > 0 %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th>Name</th>
+                <th>Secondary ID</th>
+                <th>Options</th>
+            </tr>
+            {% for user in users %}
+            <tr class="{{ user.3 }}">
+                <td>
+                    {{ user.1 }}
+                </td>
+                <td>{{ user.2 }}</td>
+                <td>
+                    <input type="button" class="btn btn-info" value="Force Rerun"
+                    onclick="location.href = '{% url 'assignments:assignment_force' assignment_id=assignment.pk  user_id=user.0  %}';">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    There are no assignments in your account. Try <a href="{% url 'assignments:create_assignment' %}">creating on</a>.
+    {% endif %}
+</div>
 {% endblock %}

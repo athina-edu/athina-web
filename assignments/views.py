@@ -3,17 +3,22 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.http import HttpResponse
 from .models import Assignment
 from .forms import AssignmentForm
 import os
 import shutil
 from rest_framework import generics
 from .serializers import AssignmentListSerializer
-from django.contrib.auth.decorators import login_required
-from django.http import Http404
 import git
 import html
 import re
+import glob
+import sqlite3
+from datetime import timedelta
+import dateutil.parser
 
 
 @login_required()
@@ -86,10 +91,43 @@ def assignment_create(request, **kwargs):
     return render(request, 'assignments/assignment_create.html', {'form': form})
 
 
-# DEPRECATED
 @login_required
 def assignment_view(request, assignment_id):
-    return render(request, 'assignments/assignment_view.html', {"assignment_id": assignment_id})
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    if assignment.owner != request.user.id:
+        raise Http404
+    else:
+        # Security check passed
+        # Find the latest sqlite3 file and open it
+        try:
+            conn = connect_to_sqlite(assignment.absolute_path)
+        except ValueError:
+            return HttpResponse("No sqlite3 database found. Athina probably has not evaluated this assignment.<br />"
+                                "Check the log file by viewing the directory to make sure that there are no"
+                                "configuration errors.")
+        cur = conn.cursor()
+        cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded FROM users')
+        users = []
+        for user in cur.fetchall():
+            if user[3] is None:
+                color = "table-danger"
+            elif user[4] < user[5]:
+                # graded
+                color = "table-success"
+            else:
+                # not grade or no url
+                color = "table-warning"
+            users.append((user[0], user[1], user[2], color))
+        conn.close()
+    return render(request, 'assignments/assignment_view.html', {"users": users, "users_len": len(users),
+                                                                "assignment": assignment})
+
+
+def connect_to_sqlite(absolute_path):
+    list_of_files = glob.glob('%s/%s/*.sqlite3' % (settings.BASE_DIR, absolute_path))
+    latest_file = max(list_of_files, key=os.path.getctime)
+    conn = sqlite3.connect(latest_file)
+    return conn
 
 
 @login_required
@@ -103,6 +141,31 @@ def assignment_delete(request, assignment_id):
         pass
     assignment.delete()
     return redirect('assignments:assignments')
+
+
+@login_required
+def assignment_force(request, assignment_id, user_id):
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    if assignment.owner != request.user.id:
+        raise Http404
+    else:
+        # Revert the commit date on record to some older version. This will force Athina to think that it didn't check
+        # the current commit. Also revert last_graded to an earlier date
+        conn = connect_to_sqlite(assignment.absolute_path)
+        cur = conn.cursor()
+        cur.execute('SELECT commit_date, last_graded FROM users WHERE user_id=?', (user_id,))
+        row = cur.fetchone()
+        # TODO: convert dates to str and the vice versa
+        try:
+            commit_date = dateutil.parser.parse(row[0]) - timedelta(days=1)
+        except OverflowError:
+            # Date is the earliest possible, 1-1-1
+            commit_date = dateutil.parser.parse(row[0]) + timedelta(days=1)
+        last_graded = commit_date - timedelta(days=1)
+        cur.execute('UPDATE users SET commit_date=?, last_graded=? WHERE user_id=?',
+                    (commit_date, last_graded, user_id,))
+        conn.close()
+        return redirect('assignments:assignments')
 
 
 class APIView(generics.ListCreateAPIView):

@@ -12,7 +12,8 @@ class Assignment(models.Model):
     simulate = models.BooleanField(default=True)
     git_source = models.CharField(max_length=255, default="")
     git_username = models.CharField(max_length=255, default="", blank=True)
-    git_password = models.CharField(max_length=255, default="", blank=True)
+    git_password = models.CharField(max_length=255, default="", blank=True,
+                                    help_text="Use an access token and not your real password.")
 
     def __str__(self):
         return self.name
