@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'accounts',
     'filemanager',
     'rest_framework',
+    'registration'
 ]
 
 MIDDLEWARE = [
@@ -120,3 +121,11 @@ STATICFILES_DIRS = [
 INTERNAL_IPS = '127.0.0.1'
 
 MEDIA_ROOT = 'athina_files'
+
+# django-registration-redux settings
+REGISTRATION_OPEN = False
+ACCOUNT_ACTIVATION_DAYS = 7
+
+# FIXME: at some point this needs to become a really email backend (currently it is not needed)
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+

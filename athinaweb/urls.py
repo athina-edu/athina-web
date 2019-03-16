@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('registration.backends.default.urls')),
+    path('accounts/', include('registration.backends.admin_approval.urls')),
     path('filemanager/', include(('filemanager.urls', 'filemanager'), namespace='filemanager')),
 ]
