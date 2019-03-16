@@ -17,6 +17,7 @@
             <tr>
                 <th>Name</th>
                 <th>Secondary ID</th>
+                <th>Info</th>
                 <th>Options</th>
             </tr>
             {% for user in users %}
@@ -25,6 +26,7 @@
                     {{ user.1 }}
                 </td>
                 <td>{{ user.2 }}</td>
+                <td>{{ user.4 }}</td>
                 <td>
                     <input type="button" class="btn btn-info" value="Force Rerun"
                     onclick="location.href = '{% url 'assignments:assignment_force' assignment_id=assignment.pk  user_id=user.0  %}';">

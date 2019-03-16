@@ -111,13 +111,15 @@ def assignment_view(request, assignment_id):
         for user in cur.fetchall():
             if user[3] is None:
                 color = "table-danger"
+                info = "No repository url submitted."
             elif user[4] < user[5]:
                 # graded
                 color = "table-success"
             else:
                 # not grade or no url
                 color = "table-warning"
-            users.append((user[0], user[1], user[2], color))
+                info = "Assignment not graded yet or unable to grade."
+            users.append((user[0], user[1], user[2], color, info))
         conn.close()
     return render(request, 'assignments/assignment_view.html', {"users": users, "users_len": len(users),
                                                                 "assignment": assignment})
@@ -158,14 +160,16 @@ def assignment_force(request, assignment_id, user_id):
         # TODO: convert dates to str and the vice versa
         try:
             commit_date = dateutil.parser.parse(row[0]) - timedelta(days=1)
+            last_graded = commit_date - timedelta(days=1)
         except OverflowError:
             # Date is the earliest possible, 1-1-1
             commit_date = dateutil.parser.parse(row[0]) + timedelta(days=1)
-        last_graded = commit_date - timedelta(days=1)
-        cur.execute('UPDATE users SET commit_date=?, last_graded=? WHERE user_id=?',
+            last_graded = commit_date - timedelta(days=1)
+        cur.execute("UPDATE users SET commit_date=?, last_graded=? WHERE user_id=?",
                     (commit_date, last_graded, user_id,))
+        conn.commit()
         conn.close()
-        return redirect('assignments:assignments')
+        return redirect('assignments:assignment_view', assignment_id=assignment.pk)
 
 
 class APIView(generics.ListCreateAPIView):
