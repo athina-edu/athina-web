@@ -9,7 +9,7 @@ class Assignment(models.Model):
     date_created = models.DateTimeField('Date Created', default=timezone.now, editable=False)
     data_updated = models.DateTimeField('Date Updated', auto_now=True)
     active = models.BooleanField(default=True)
-    simulate = models.BooleanField(default=True)
+    simulate = models.BooleanField(default=False)
     git_source = models.CharField(max_length=255, default="")
     git_username = models.CharField(max_length=255, default="", blank=True)
     git_password = models.CharField(max_length=255, default="", blank=True,

@@ -92,6 +92,20 @@ def assignment_create(request, **kwargs):
 
 
 @login_required
+def assignment_log(request, assignment_id):
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    if assignment.owner != request.user.id:
+        raise Http404
+    else:
+        list_of_files = glob.glob('%s/%s/*.log' % (settings.BASE_DIR, assignment.absolute_path))
+        try:
+            latest_file = os.path.basename(max(list_of_files, key=os.path.getctime))
+        except ValueError:
+            raise Http404
+        return redirect('filemanager:view_file', inner_path="%s%s%s" % (assignment.name, "|", latest_file))
+
+
+@login_required
 def assignment_view(request, assignment_id):
     assignment = get_object_or_404(Assignment, pk=assignment_id)
     if assignment.owner != request.user.id:

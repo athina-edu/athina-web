@@ -16,7 +16,10 @@ def index(request, **kwargs):
     results = []
 
     # Refresh git repo
-    git.Repo(full_path).remote().pull()
+    try:
+        git.Repo(full_path).remote().pull()
+    except git.exc.InvalidGitRepositoryError:  # this fails when navigating to subdirs FIXME: probably
+        pass
 
     files = os.listdir(full_path)
     for file in files:

@@ -21,21 +21,25 @@
         <table class="table table-striped">
             <tr>
                 <th>Name</th>
-                <th>Active</th>
-                <th>Simulate</th>
                 <th>Options</th>
             </tr>
             {% for assignment in assignments %}
-            <tr>
+                {% if assignment.active is True %}
+                    <tr class="table-success">
+                {% else %}
+                    <tr class="table-danger">
+                {% endif %}
                 <td><a href="{% url 'assignments:assignment_view' assignment_id=assignment.pk %}">
                     {{ assignment.name }}
                 </a></td>
-                <td>{{ assignment.active }}</td>
-                <td>{{ assignment.simulate }}</td>
                 <td>
+                    <input type="button" class="btn btn-info" value="View Users"
+                    onclick="location.href = '{% url 'assignments:assignment_view' assignment_id=assignment.pk %}';">
                     <input type="button" class="btn btn-info" value="View Dir"
                     onclick="location.href = '{% url 'filemanager:index' inner_path=assignment.name %}';">
-                    <input type="button" class="btn btn-info" value="Edit"
+                    <input type="button" class="btn btn-info" value="View Log"
+                    onclick="location.href = '{% url 'assignments:assignment_log' assignment_id=assignment.pk %}';">
+                    <input type="button" class="btn btn-warning" value="Edit"
                     onclick="location.href = '{% url 'assignments:assignment_edit' assignment_id=assignment.pk %}';">
                     <a class="confirm-delete{{ assignment.id }} btn btn-danger"
                        href="{% url 'assignments:assignment_delete' assignment_id=assignment.pk %}">Delete</a></td>
