@@ -14,6 +14,7 @@ from rest_framework import generics
 from .serializers import AssignmentListSerializer
 import git
 import html
+import base64
 import re
 import glob
 import sqlite3
@@ -120,7 +121,8 @@ def assignment_view(request, assignment_id):
                                 "Check the log file by viewing the directory to make sure that there are no"
                                 "configuration errors.")
         cur = conn.cursor()
-        cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded FROM users')
+        cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded,'
+                    'last_grade, last_report FROM users')
         users = []
         for user in cur.fetchall():
             if user[3] is None:
@@ -133,7 +135,7 @@ def assignment_view(request, assignment_id):
                 # not grade or no url
                 color = "table-warning"
                 info = "Assignment not graded yet or unable to grade."
-            users.append((user[0], user[1], user[2], color, info))
+            users.append((user[0], user[1], user[2], color, info, user[6], base64.b64encode(user[7]).decode("ascii")))
         conn.close()
     return render(request, 'assignments/assignment_view.html', {"users": users, "users_len": len(users),
                                                                 "assignment": assignment})
