@@ -125,12 +125,13 @@ def assignment_view(request, assignment_id):
                     'last_grade, last_report FROM users')
         users = []
         for user in cur.fetchall():
-            if user[3] is None:
+            if user[3] is None and user[6] is None:
                 color = "table-danger"
                 info = "No repository url submitted."
             elif user[4] < user[5]:
                 # graded
                 color = "table-success"
+                info = "Graded"
             else:
                 # not grade or no url
                 color = "table-warning"
