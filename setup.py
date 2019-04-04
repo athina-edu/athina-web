@@ -11,5 +11,6 @@ setup(
     license='MIT',
     author='Michail Tsikerdekis',
     author_email='Michael.Tsikerdekis@wwu.edu',
+    include_package_data=True,
     description=''
 )
