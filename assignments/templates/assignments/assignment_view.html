@@ -17,6 +17,7 @@
                 <th>Secondary ID</th>
                 <th>Info</th>
                 <th>Grade</th>
+                <th>Moss Max/Avg Similarity</th>
                 <th>Options</th>
             </tr>
             {% for user in users %}
@@ -27,9 +28,12 @@
                 <td>{{ user.2 }}</td>
                 <td>{{ user.4 }}</td>
                 <td>{{ user.5 }}</td>
+                <td>{{ user.9 }} / {{ user.10 }}</td>
                 <td>
                     <input type="button" class="btn btn-info" value="Test Report"
                     onclick="location.href = 'data:application/octet-stream;charset=utf-8;base64,{{ user.6 }}';">
+                    <input type="button" class="btn btn-info" value="Moss Report"
+                    onclick="location.href = '{{ moss_url }}';">
                     <input type="button" class="btn btn-warning" value="Force Rerun"
                     onclick="location.href = '{% url 'assignments:assignment_force' assignment_id=assignment.pk  user_id=user.0  %}';">
                 </td>

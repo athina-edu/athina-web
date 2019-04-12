@@ -15,6 +15,10 @@ class AssignmentListSerializer(serializers.ModelSerializer):
             git.Repo('%s/%s/' % (settings.BASE_DIR, obj.absolute_path)).remote().pull()
         except git.exc.InvalidGitRepositoryError:  # this exception should never happen unless someone messed with repos
             pass
+        except git.exc.GitCommandError:
+            # Git has changes that require stashing
+            git.Repo('%s/%s/' % (settings.BASE_DIR, obj.absolute_path)).git.reset("--hard")
+            git.Repo('%s/%s/' % (settings.BASE_DIR, obj.absolute_path)).remote().pull()
 
         # Return directory
         return '%s/%s/' % (settings.BASE_DIR, obj.absolute_path)

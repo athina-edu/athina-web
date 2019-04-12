@@ -121,8 +121,12 @@ def assignment_view(request, assignment_id):
                                 "Check the log file by viewing the directory to make sure that there are no"
                                 "configuration errors.")
         cur = conn.cursor()
+        # Get moss url (if it exists)
+        cur.execute('SELECT value FROM assignmentdata WHERE key = ?', ('moss_url',))
+        moss_url = cur.fetchone() if cur.fetchone() is not None else '#'
+
         cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded,'
-                    'last_grade, last_report FROM users')
+                    'last_grade, last_report, moss_max, moss_average FROM users')
         users = []
         for user in cur.fetchall():
             if user[3] is None and user[6] is None:
@@ -136,10 +140,11 @@ def assignment_view(request, assignment_id):
                 # not grade or no url
                 color = "table-warning"
                 info = "Assignment not graded yet or unable to grade."
-            users.append((user[0], user[1], user[2], color, info, user[6], base64.b64encode(user[7]).decode("ascii")))
+            users.append((user[0], user[1], user[2], color, info, user[6],
+                          base64.b64encode(user[7]).decode("ascii"), user[8], user[9]))
         conn.close()
     return render(request, 'assignments/assignment_view.html', {"users": users, "users_len": len(users),
-                                                                "assignment": assignment})
+                                                                "assignment": assignment, "moss_url": moss_url})
 
 
 def connect_to_sqlite(absolute_path):
