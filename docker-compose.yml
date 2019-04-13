@@ -4,7 +4,6 @@ services:
     image: test #athinaedu/athina-web:latest
     command: gunicorn --bind :8000 athinaweb.wsgi:application
     volumes:
-      #- .:/code
       - /static:/static
     ports:
       - "8000:8000"
