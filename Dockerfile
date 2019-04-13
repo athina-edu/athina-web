@@ -4,4 +4,4 @@ ENV PYTHONUNBUFFERED 1
 ADD . /code
 WORKDIR /code
 RUN pip install pip
-RUN pip install .
+RUN pip install -r requirements.txt

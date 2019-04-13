@@ -1,9 +1,10 @@
 version: '3'
 services:
   athina-web:
-    image: athinaedu/athina-web:latest
-    command: gunicorn athinaweb.wsgi:application
+    image: test #athinaedu/athina-web:latest
+    command: gunicorn --bind :8000 athinaweb.wsgi:application
     volumes:
-      - .:/code
+      #- .:/code
+      - /static:/static
     ports:
       - "8000:8000"

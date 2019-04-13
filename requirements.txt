@@ -1,0 +1,6 @@
+gitpython
+Django>=2.0,<3.0
+djangorestframework
+django-registration-redux
+python-dateutil
+gunicorn
