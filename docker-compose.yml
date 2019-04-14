@@ -2,8 +2,8 @@ version: '3'
 services:
   athina-web:
     image: test #athinaedu/athina-web:latest
-    command: gunicorn --bind :8000 athinaweb.wsgi:application
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8000 athinaweb.wsgi:application"
     volumes:
-      - /static:/static
+      - ./static_files/:/code/static_files/
     ports:
       - "8000:8000"
