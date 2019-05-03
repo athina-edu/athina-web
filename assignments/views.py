@@ -177,18 +177,8 @@ def assignment_force(request, assignment_id, user_id):
         # the current commit. Also revert last_graded to an earlier date
         conn = connect_to_sqlite(assignment.absolute_path)
         cur = conn.cursor()
-        cur.execute('SELECT commit_date, last_graded FROM users WHERE user_id=?', (user_id,))
-        row = cur.fetchone()
-        # TODO: convert dates to str and the vice versa
-        try:
-            commit_date = dateutil.parser.parse(row[0]) - timedelta(days=1)
-            last_graded = commit_date - timedelta(days=1)
-        except OverflowError:
-            # Date is the earliest possible, 1-1-1
-            commit_date = dateutil.parser.parse(row[0]) + timedelta(days=1)
-            last_graded = commit_date - timedelta(days=1)
-        cur.execute("UPDATE users SET commit_date=?, last_graded=? WHERE user_id=?",
-                    (commit_date, last_graded, user_id,))
+        cur.execute("UPDATE users SET force_test=1 WHERE user_id=?",
+                    (user_id,))
         conn.commit()
         conn.close()
         return redirect('assignments:assignment_view', assignment_id=assignment.pk)
