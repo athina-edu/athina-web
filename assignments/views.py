@@ -126,12 +126,15 @@ def assignment_view(request, assignment_id):
         moss_url = cur.fetchone() if cur.fetchone() is not None else '#'
 
         cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded,'
-                    'last_grade, last_report, moss_max, moss_average FROM users')
+                    'last_grade, last_report, moss_max, moss_average, force_test FROM users')
         users = []
         for user in cur.fetchall():
             if user[3] is None and user[6] is None:
                 color = "table-danger"
-                info = "No repository url submitted."
+                info = "No repository url submitted"
+            elif user[10] == 1:
+                color = "table-warning"
+                info = "Forced test in progress"
             elif user[4] < user[5]:
                 # graded
                 color = "table-success"
@@ -139,7 +142,7 @@ def assignment_view(request, assignment_id):
             else:
                 # not grade or no url
                 color = "table-warning"
-                info = "Assignment not graded yet or unable to grade."
+                info = "Assignment not graded yet or past due date"
             users.append((user[0], user[1], user[2], color, info, user[6],
                           base64.b64encode(user[7]).decode("ascii"), user[8], user[9]))
         conn.close()
