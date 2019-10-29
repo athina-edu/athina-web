@@ -31,7 +31,7 @@ def index(request):
 def assignments(request):
     # TODO: incorporate paginator: https://docs.djangoproject.com/en/2.0/topics/pagination/
     # TODO: on delete should prompt a question that verifies by typing the name of the thing to be deleted
-    assignments_list = Assignment.objects.filter(owner=request.user.id)
+    assignments_list = Assignment.objects.filter(owner=request.user.id).order_by('-active', 'name')
     return render(request, 'assignments/assignments.html',
                   {"assignments": assignments_list,
                    'assignments_len': len(assignments_list)})
