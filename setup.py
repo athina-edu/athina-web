@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='athinaweb',
-    version='0.9',
+    version='0.97',
     packages=find_packages(),
     scripts=['manage.py'],
     install_requires=['gitpython', 'Django>=2.0,<3.0', 'djangorestframework', 'django-registration-redux',

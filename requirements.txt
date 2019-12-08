@@ -1,6 +1,13 @@
-gitpython
-Django>=2.0,<3.0
-djangorestframework
-django-registration-redux
-python-dateutil
-gunicorn
+-e git+https://github.com/athina-edu/athina-web.git@cecfabd356642bb34a49b679e220831f5e5739aa#egg=athinaweb
+Django==2.2.8
+django-registration-redux==2.6
+djangorestframework==3.10.3
+gitdb2==2.0.6
+GitPython==3.0.5
+gunicorn==20.0.4
+python-dateutil==2.8.1
+pytz==2019.3
+six==1.13.0
+smmap2==2.0.5
+sqlparse==0.3.0
+v==0.0.0
