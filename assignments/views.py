@@ -17,9 +17,11 @@ import html
 import base64
 import re
 import glob
-import sqlite3
+import pymysql
+import yaml
 from datetime import timedelta
 import dateutil.parser
+from athinaweb.athina_db import db_info
 
 
 @login_required()
@@ -113,20 +115,23 @@ def assignment_view(request, assignment_id):
         raise Http404
     else:
         # Security check passed
-        # Find the latest sqlite3 file and open it
         try:
-            conn = connect_to_sqlite(assignment.absolute_path)
+            conn = connect_to_db(assignment.absolute_path)
         except ValueError:
-            return HttpResponse("No sqlite3 database found. Athina probably has not evaluated this assignment.<br />"
+            return HttpResponse("No database found. Athina probably has not evaluated this assignment.<br />"
                                 "Check the log file by viewing the directory to make sure that there are no"
                                 "configuration errors.")
         cur = conn.cursor()
         # Get moss url (if it exists)
-        cur.execute('SELECT value FROM assignmentdata WHERE key = ?', ('moss_url',))
+        course_id, assignment_id = get_course_assignment_id(request, assignment.absolute_path)
+        cur.execute('SELECT variable_value FROM assignmentdata WHERE variable = %s AND '
+                    'course_id = %s AND assignment_id = %s',
+                    ('moss_url', course_id, assignment_id,))
         moss_url = cur.fetchone() if cur.fetchone() is not None else '#'
 
         cur.execute('SELECT user_id, user_fullname, secondary_id, repository_url, commit_date, last_graded,'
-                    'last_grade, last_report, moss_max, moss_average, force_test FROM users')
+                    'last_grade, last_report, moss_max, moss_average, force_test FROM users WHERE '
+                    '`course_id` = %s AND `assignment_id` = %s', (course_id, assignment_id,))
         users = []
         for user in cur.fetchall():
             if user[3] is None and user[6] is None:
@@ -150,11 +155,11 @@ def assignment_view(request, assignment_id):
                                                                 "assignment": assignment, "moss_url": moss_url})
 
 
-def connect_to_sqlite(absolute_path):
-    list_of_files = glob.glob('%s/%s/*.sqlite3' % (settings.BASE_DIR, absolute_path))
-    latest_file = max(list_of_files, key=os.path.getctime)
-    conn = sqlite3.connect(latest_file)
-    return conn
+def connect_to_db(absolute_path):
+    db_details = db_info()
+    return pymysql.connect(host=db_details.athina_mysql_host, user=db_details.athina_mysql_username,
+                           password=db_details.athina_mysql_password, port=int(db_details.athina_mysql_port),
+                           db="athina")
 
 
 @login_required
@@ -171,6 +176,13 @@ def assignment_delete(request, assignment_id):
 
 
 @login_required
+def get_course_assignment_id(request, absolute_path):
+    with open('%s/%s/athina.yaml' % (settings.BASE_DIR, absolute_path), 'r') as stream:
+        yaml_dict = yaml.load(stream, Loader=yaml.SafeLoader)
+    return yaml_dict['course_id'], yaml_dict['assignment_id']
+
+
+@login_required
 def assignment_force(request, assignment_id, user_id):
     assignment = get_object_or_404(Assignment, pk=assignment_id)
     if assignment.owner != request.user.id:
@@ -178,10 +190,15 @@ def assignment_force(request, assignment_id, user_id):
     else:
         # Revert the commit date on record to some older version. This will force Athina to think that it didn't check
         # the current commit. Also revert last_graded to an earlier date
-        conn = connect_to_sqlite(assignment.absolute_path)
+        conn = connect_to_db(assignment.absolute_path)
         cur = conn.cursor()
-        cur.execute("UPDATE users SET force_test=1 WHERE user_id=?",
-                    (user_id,))
+        course_id, assignment_id = get_course_assignment_id(request, assignment.absolute_path)
+        cur.execute("SELECT repository_url FROM users WHERE user_id=%s AND course_id=%s AND assignment_id=%s LIMIT 1",
+                    (user_id, course_id, assignment_id,))
+        result = cur.fetchone()
+        repository_url = result if result is not None else '#'
+        cur.execute("UPDATE users SET force_test=1 WHERE course_id=%s AND assignment_id=%s AND repository_url=%s",
+                    (course_id, assignment_id, repository_url,))
         conn.commit()
         conn.close()
         return redirect('assignments:assignment_view', assignment_id=assignment.pk)

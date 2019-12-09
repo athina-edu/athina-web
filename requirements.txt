@@ -1,12 +1,14 @@
--e git+https://github.com/athina-edu/athina-web.git@cecfabd356642bb34a49b679e220831f5e5739aa#egg=athinaweb
+-e git+https://github.com/athina-edu/athina-web.git@7cb25e0598cf3c43aa7a14c05c8ec153dfd71e49#egg=athinaweb
 Django==2.2.8
 django-registration-redux==2.6
 djangorestframework==3.10.3
 gitdb2==2.0.6
 GitPython==3.0.5
 gunicorn==20.0.4
+PyMySQL==0.9.3
 python-dateutil==2.8.1
 pytz==2019.3
+PyYAML==5.2
 six==1.13.0
 smmap2==2.0.5
 sqlparse==0.3.0
