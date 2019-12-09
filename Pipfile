@@ -9,6 +9,7 @@ v = {editable = true,version = "*"}
 [packages]
 athinaweb = {editable = true,path = "."}
 pyyaml = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.6"
