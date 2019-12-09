@@ -66,20 +66,6 @@ WSGI_APPLICATION = 'athinaweb.wsgi.application'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'athina_web',
-        'USER': 'athina',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': 3306,
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
