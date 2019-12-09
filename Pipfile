@@ -1,0 +1,15 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+v = {editable = true,version = "*"}
+
+[packages]
+athinaweb = {editable = true,path = "."}
+pyyaml = "*"
+mysqlclient = "*"
+
+[requires]
+python_version = "3.6"
