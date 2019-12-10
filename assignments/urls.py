@@ -11,6 +11,7 @@ urlpatterns = [
     path('<int:assignment_id>/delete', views.assignment_delete, name='assignment_delete'),
     path('<int:assignment_id>/force/<int:user_id>', views.assignment_force, name='assignment_force'),
     path('api/', views.APIView.as_view(), name="api"),
+    path('webhook/', views.push_event, name="webhook"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

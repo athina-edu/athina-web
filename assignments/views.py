@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Assignment
 from .forms import AssignmentForm
 import os
@@ -202,6 +203,11 @@ def assignment_force(request, assignment_id, user_id):
         conn.commit()
         conn.close()
         return redirect('assignments:assignment_view', assignment_id=assignment.pk)
+
+
+@csrf_exempt
+def push_event(request):
+    return HttpResponse('pong')
 
 
 class APIView(generics.ListCreateAPIView):
