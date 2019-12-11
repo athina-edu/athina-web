@@ -20,6 +20,7 @@ import re
 import glob
 import pymysql
 import yaml
+import json
 from datetime import timedelta
 import dateutil.parser
 from athinaweb.athina_db import db_info
@@ -116,12 +117,7 @@ def assignment_view(request, assignment_id):
         raise Http404
     else:
         # Security check passed
-        try:
-            conn = connect_to_db(assignment.absolute_path)
-        except ValueError:
-            return HttpResponse("No database found. Athina probably has not evaluated this assignment.<br />"
-                                "Check the log file by viewing the directory to make sure that there are no"
-                                "configuration errors.")
+        conn = connect_to_db()
         cur = conn.cursor()
         # Get moss url (if it exists)
         course_id, assignment_id = get_course_assignment_id(request, assignment.absolute_path)
@@ -156,7 +152,7 @@ def assignment_view(request, assignment_id):
                                                                 "assignment": assignment, "moss_url": moss_url})
 
 
-def connect_to_db(absolute_path):
+def connect_to_db():
     db_details = db_info()
     return pymysql.connect(host=db_details.athina_mysql_host, user=db_details.athina_mysql_username,
                            password=db_details.athina_mysql_password, port=int(db_details.athina_mysql_port),
@@ -191,7 +187,7 @@ def assignment_force(request, assignment_id, user_id):
     else:
         # Revert the commit date on record to some older version. This will force Athina to think that it didn't check
         # the current commit. Also revert last_graded to an earlier date
-        conn = connect_to_db(assignment.absolute_path)
+        conn = connect_to_db()
         cur = conn.cursor()
         course_id, assignment_id = get_course_assignment_id(request, assignment.absolute_path)
         cur.execute("SELECT repository_url FROM users WHERE user_id=%s AND course_id=%s AND assignment_id=%s LIMIT 1",
@@ -207,7 +203,21 @@ def assignment_force(request, assignment_id, user_id):
 
 @csrf_exempt
 def push_event(request):
-    return HttpResponse('pong')
+    print(request.headers)
+    print(request.body)
+    if request.headers.get('X-Gitlab-Event', '') == 'Push Hook':
+        try:
+            json_body = json.loads(request.body)
+            student_git_url = json_body['project']['git_http_url']
+        except KeyError:
+            return HttpResponse('ok')
+        webhook_token = request.headers.get('X-Gitlab-Token', '')
+        conn = connect_to_db()
+        cur = conn.cursor()
+        # Find the places that this git url has been used and update that it has been changed
+        cur.execute('UPDATE users SET webhook_event=1 WHERE repository_url = %s AND webhook_token = %s',
+                    (student_git_url, webhook_token,))
+    return HttpResponse('ok')
 
 
 class APIView(generics.ListCreateAPIView):
