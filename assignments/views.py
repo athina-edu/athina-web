@@ -203,8 +203,6 @@ def assignment_force(request, assignment_id, user_id):
 
 @csrf_exempt
 def push_event(request):
-    print(request.headers)
-    print(request.body)
     if request.headers.get('X-Gitlab-Event', '') == 'Push Hook':
         try:
             json_body = json.loads(request.body)
@@ -215,8 +213,10 @@ def push_event(request):
         conn = connect_to_db()
         cur = conn.cursor()
         # Find the places that this git url has been used and update that it has been changed
-        cur.execute('UPDATE users SET webhook_event=1 WHERE repository_url = %s AND webhook_token = %s',
-                    (student_git_url, webhook_token,))
+        result = cur.execute('UPDATE users SET webhook_event=1 WHERE repository_url = %s AND webhook_token = %s',
+                             (student_git_url, webhook_token,))
+        conn.commit()
+        conn.close()
     return HttpResponse('ok')
 
 
