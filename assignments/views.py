@@ -193,9 +193,13 @@ def assignment_force(request, assignment_id, user_id):
         cur.execute("SELECT repository_url FROM users WHERE user_id=%s AND course_id=%s AND assignment_id=%s LIMIT 1",
                     (user_id, course_id, assignment_id,))
         result = cur.fetchone()
-        repository_url = result if result is not None else '#'
-        cur.execute("UPDATE users SET force_test=1 WHERE course_id=%s AND assignment_id=%s AND repository_url=%s",
-                    (course_id, assignment_id, repository_url,))
+        repository_url = result[0]
+        if repository_url is not None or "":
+            cur.execute("UPDATE users SET force_test=1 WHERE course_id=%s AND assignment_id=%s AND repository_url=%s",
+                        (course_id, assignment_id, repository_url,))
+        else:
+            cur.execute("UPDATE users SET force_test=1 WHERE course_id=%s AND assignment_id=%s AND user_id=%s",
+                        (course_id, assignment_id, user_id,))
         conn.commit()
         conn.close()
         return redirect('assignments:assignment_view', assignment_id=assignment.pk)
