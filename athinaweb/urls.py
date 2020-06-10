@@ -23,8 +23,7 @@ urlpatterns = [
     path('about/', TemplateView.as_view(template_name="about.html"), name='about'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('registration.backends.default.urls')),
-    path('accounts/', include('registration.backends.admin_approval.urls')),
     path('filemanager/', include(('filemanager.urls', 'filemanager'), namespace='filemanager')),
 ]

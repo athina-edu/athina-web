@@ -10,6 +10,7 @@ v = {editable = true,version = "*"}
 athinaweb = {editable = true,path = "."}
 pyyaml = "*"
 mysqlclient = "*"
+django = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"

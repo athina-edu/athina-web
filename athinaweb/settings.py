@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'accounts',
     'filemanager',
     'rest_framework',
-    'registration'
 ]
 
 MIDDLEWARE = [
