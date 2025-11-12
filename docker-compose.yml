@@ -1,7 +1,9 @@
-version: '3'
 services:
   athina-web:
-    image: test #athinaedu/athina-web:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: athinaweb:local
     command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8000 athinaweb.wsgi:application"
     volumes:
       - ./static_files/:/code/static_files/

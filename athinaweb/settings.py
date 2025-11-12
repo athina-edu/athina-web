@@ -12,6 +12,21 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 from .settings_secret import *
+import sys
+
+# Allow opt-in test mode that forces SQLite in-memory DB so tests can run without a MySQL server.
+# To enable this locally or in CI, set the environment variable ATHINA_USE_SQLITE_FOR_TESTS=1
+try:
+    use_sqlite_tests = os.environ.get('ATHINA_USE_SQLITE_FOR_TESTS', '0') == '1' or any('pytest' in a for a in sys.argv)
+except Exception:
+    use_sqlite_tests = os.environ.get('ATHINA_USE_SQLITE_FOR_TESTS', '0') == '1'
+if use_sqlite_tests:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

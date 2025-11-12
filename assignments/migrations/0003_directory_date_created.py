@@ -2,7 +2,7 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='directory',
             name='date_created',
-            field=models.DateTimeField(default=datetime.datetime(2018, 4, 4, 20, 49, 53, 420899, tzinfo=utc), verbose_name='Date Created'),
+            field=models.DateTimeField(default=datetime.datetime(2018, 4, 4, 20, 49, 53, 420899, tzinfo=timezone.utc), verbose_name='Date Created'),
         ),
     ]
