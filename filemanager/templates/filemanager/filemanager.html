@@ -8,10 +8,21 @@
 
 {% block title %}File Manager{% endblock %}
 
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
+        <li class="breadcrumb-item"><a href="{% url 'assignments:assignments' %}">Courses</a></li>
+        <li class="breadcrumb-item active">{{ inner_path }}</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
 <div class="mt-2">
 <h3><b>Viewing /{{ inner_path }}</b></h3>
+<div class="mb-3">
+    <a class="btn btn-secondary" href="{% url 'assignments:assignments' %}">Back to Courses</a>
+</div>
 
 <!--
 DEPRECATED: No need to upload anything since all assignment dirs are git based

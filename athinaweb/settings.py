@@ -80,6 +80,12 @@ WSGI_APPLICATION = 'athinaweb.wsgi.application'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
+# Session settings — 30 days when "remember me" is checked (Django's LoginView
+# honours this automatically via the remember_me POST parameter).
+SESSION_COOKIE_AGE = 30 * 24 * 60 * 60  # 30 days in seconds
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True   # default; overridden when remember_me is set
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

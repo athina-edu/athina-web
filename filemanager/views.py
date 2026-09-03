@@ -15,10 +15,12 @@ def index(request, **kwargs):
     inner_path, inner_path_hyphened, full_path = utils.inner_path_process(inner_path, request.user.id)
     results = []
 
-    # Refresh git repo
+    # Refresh git repo — always reset to remote (local changes are discarded)
     try:
-        git.Repo(full_path).remote().pull()
-    except git.exc.InvalidGitRepositoryError:  # this fails when navigating to subdirs FIXME: probably
+        repo = git.Repo(full_path)
+        repo.remote().fetch()
+        repo.git.reset("--hard", "origin/master")
+    except (git.exc.InvalidGitRepositoryError, git.exc.GitCommandError, git.exc.NoSuchPathError):
         pass
 
     files = os.listdir(full_path)

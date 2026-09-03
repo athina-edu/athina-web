@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Assign TAs{% endblock %}
+{% block breadcrumbs %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0" style="background: transparent; padding: 0;">
+        <li class="breadcrumb-item"><a href="{% url 'accounts:user_list' %}">Users</a></li>
+        <li class="breadcrumb-item active">Assign TAs</li>
+    </ol>
+</nav>
+{% endblock %}
+{% block content %}
+<div class="mt-2" style="max-width: 500px;">
+<h3>Assign TAs</h3>
+<hr>
+<p>Select the TAs that you manage. They will have access to all your courses.</p>
+<form method="post">
+    {% csrf_token %}
+    {% for choice in form.tas %}
+    <div class="form-check mb-2">
+        {{ choice }}
+    </div>
+    {% endfor %}
+    <button class="btn btn-primary mt-3" type="submit">Save Assignments</button>
+    <a class="btn btn-secondary" href="{% url 'accounts:user_list' %}">Cancel</a>
+</form>
+</div>
+{% endblock %}
