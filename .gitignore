@@ -12,9 +12,14 @@ db.sqlite3
 athina_files/*
 .idea
 *.pyc
+__pycache__/
+*.log
 .dropbox*
 settings_secret.py
+settings_secret_local.py
 athinaweb.egg-info
+.env
+.env.*
 
 # exception to the rule
 !athina_files/.gitkeep

@@ -16,7 +16,7 @@ MYSQL_CONTAINER="athina-mysql-dev"
 MYSQL_PORT=3307
 MYSQL_ROOT_PASS="athina_dev_root"
 MYSQL_USER="athina"
-MYSQL_PASS="athina_dev_pass"
+MYSQL_PASS="${ATHINA_MYSQL_PASSWORD:-changeme}"
 MYSQL_DB="athina"
 
 # Colors
