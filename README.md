@@ -1,10 +1,33 @@
-# athina-web
+# ⚠️ DEPRECATED — athina-web has been merged into athina
 
-Web dashboard for the [Athina](https://github.com/athina-edu/athina) autograder. Provides a browser-based interface for managing courses, assignments, students, and grading — without touching the command line.
+> **This repository is deprecated and no longer maintained.**
+> The web dashboard has been merged into the main [Athina](https://github.com/athina-edu/athina) repository.
+>
+> **Install with web support:**
+> ```bash
+> pip install ".[web]"
+> ```
+>
+> **Source code:** Now lives in `athina_web/` inside the [athina](https://github.com/athina-edu/athina) repo.
 
-> **Note:** Most users install via the [one-click-run bundle](https://github.com/athina-edu/athina-one-click-run) which includes athina-web, the grading engine, and a MySQL database in Docker.
+---
 
-## Features
+## Migration Guide
+
+If you were using `athina-web` separately:
+
+1. Clone [athina](https://github.com/athina-edu/athina) instead
+2. Install with web extras: `pip install ".[web]"`
+3. Run `python manage.py migrate && python manage.py runserver`
+4. The web dashboard is now at `http://localhost:8000` (same as before)
+
+The one-click-run deployment ([athina-one-click-run](https://github.com/athina-edu/athina-one-click-run)) continues to work — it pulls the Docker images which now build from the merged repo.
+
+## Archived Documentation
+
+The following docs are preserved for reference:
+
+### Features
 
 - **Course management**: Create courses, enroll students via email or bulk import
 - **Assignment management**: Create assignments from Git template repos, configure grading options
@@ -16,6 +39,13 @@ Web dashboard for the [Athina](https://github.com/athina-edu/athina) autograder.
 - **Role-based access**: Admin, Faculty, and Teaching Assistant roles with course-level permissions
 - **File browser**: Browse and edit assignment files, test scripts, and configurations
 - **GitLab webhooks**: Automatic re-grading when students push new commits
+
+### Tech Stack
+
+- **Backend**: Django 3.2 + Django REST Framework
+- **Database**: SQLite (development) / MySQL 8.0 (production)
+- **Auth**: Django built-in auth + django-registration
+- **Frontend**: Bootstrap 4, jQuery, Font Awesome
 
 ## Architecture
 
